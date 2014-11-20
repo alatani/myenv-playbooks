@@ -1,0 +1,14 @@
+#ansible-playbook ./init.yml -i ./hosts  --ask-sudo-pass
+#- hosts: baseservers
+#  sudo: true
+#  gather_facts: false
+#  roles:
+#    - ssh
+
+- hosts: baseservers
+  sudo: true
+  roles:
+    - base
+    - angstwad.docker_ubuntu
+    - gitlab
+

@@ -1,0 +1,22 @@
+- name: enable logging
+  ufw: logging=on
+
+- ufw: 
+    rule: allow 
+    proto: tcp
+    port: "{{ item }}"
+  with_items:
+    - "{{ ssh_port }}"
+    - 80
+    - 8888
+    - 3001
+    - 2375
+    - 3306
+    - 9418
+
+- name: deny all inbound accesses 
+  ufw: rule=deny proto=any
+
+- name: enable ufw
+  ufw: state=enabled
+

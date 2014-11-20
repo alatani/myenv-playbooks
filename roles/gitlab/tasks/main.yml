@@ -1,0 +1,13 @@
+#- name: prepare mysql directory
+#
+
+- name: setup mysql container
+  docker:
+    image: sameersbn/mysql:latest
+    volumes: "{{gitlab_mysql_datadir}}:/var/lib/mysql"
+    name: gitlab-mysql
+
+- name: setup redis container
+  docker:
+    image: sameersbn/redis:latest
+    name: gitlab-redis

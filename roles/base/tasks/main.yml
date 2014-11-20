@@ -1,0 +1,21 @@
+#ufw must configured at first. maybe.
+- include: ufw.yml
+
+- name: apt-get update
+  action: apt update_cache=yes 
+
+- name: install fail2ban
+  action: apt pkg=fail2ban state=installed
+
+- name: install basic packages
+  action: apt pkg={{ item }} state=installed
+  with_items:
+    - vim
+    - git
+    - build-essential
+    - make
+    - gcc
+    - libc6-dev
+
+#install docker
+- include: docker.yml

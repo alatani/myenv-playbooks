@@ -1,0 +1,81 @@
+- name: Tset default ssh port
+  local_action: shell nc -z -G 3 {{ inventory_hostname }} {{ ansible_ssh_port }}
+  register: nc_ssh_port
+  failed_when: nc_ssh_port.stdout.find('failed') != -1
+  changed_when: nc_ssh_port.stdout == ""
+  ignore_errors: yes
+
+- name: Add new user
+  when: nc_ssh_port|success
+  user:
+    name: "{{ ssh_user }}"
+- name: Create an authorized_keys file
+  when: nc_ssh_port|success
+  command: /bin/cp /home/{{ ssh_user }}/.ssh/id_rsa.pub /home/{{ ssh_user }}/.ssh/authorized_keys
+
+- name: Change attributes of an authorized_keys file
+  when: nc_ssh_port|success
+  file:
+    path: /home/{{ ssh_user }}/.ssh/authorized_keys
+    owner: "{{ ssh_user }}"
+    group: "{{ ssh_user }}"
+    mode: 0600
+- name: Fobid root to access via ssh
+  when: nc_ssh_port|success
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "^PermitRootLogin without-password"
+    line: "PermitRootLogin no"
+    backrefs: yes
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+- name: Fobid ssh user to login with password
+  when: nc_ssh_port|success
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    regexp: "^#?PasswordAuthentication yes"
+    line: "PasswordAuthentication no"
+    backrefs: yes
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+- name: Permit only specific user to access via ssh
+  when: nc_ssh_port|success
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    insertafter: "^PasswordAuthentication no"
+    regexp: "^AllowUsers"
+    line: "AllowUsers {{ ssh_user }}"
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+- name: Change ssh port number
+  when: nc_ssh_port|success
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    state: present
+    insertafter: "^#Port 22"
+    regexp: "^Port"
+    line: "Port {{ ssh_port }}"
+    validate: "sshd -T -f %s"
+    backup: yes
+  notify:
+    - restart sshd
+
+- name: Register a public key to remote host
+  when: nc_ssh_port|success
+  authorized_key:
+    user: "{{ ssh_user }}"
+    key:  "{{ lookup('file', '~/.ssh/sakura/id_rsa.pub') }}"
+
+- name: Update packages
+  when: nc_ssh_port|success
+  apt: update_cache=yes upgrade=dist
+
