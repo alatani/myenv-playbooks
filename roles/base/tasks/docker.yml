@@ -4,9 +4,10 @@
 - name: install docker-py
   pip:  name=docker-py version=0.3.0
 
-- name: restart docker.io
-  service: 
-    name: docker.io 
-    state: restarted
+#これやばい
+#- name: restart docker.io
+#  service: 
+#    name: docker.io 
+#    state: restarted
 
 

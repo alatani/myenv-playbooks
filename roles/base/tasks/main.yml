@@ -16,6 +16,9 @@
     - make
     - gcc
     - libc6-dev
+    - tmux
+    - mailutils
+    - sasl2-bin
 
-#install docker
+- include: nginx.yml
 - include: docker.yml

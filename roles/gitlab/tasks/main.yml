@@ -1,13 +1,53 @@
-#- name: prepare mysql directory
-#
-
 - name: setup mysql container
   docker:
     image: sameersbn/mysql:latest
     volumes: "{{gitlab_mysql_datadir}}:/var/lib/mysql"
     name: gitlab-mysql
+    env:
+      - "DB_NAME={{ gitlab_mysql_db_name }}" 
+      - "DB_USER={{ gitlab_mysql_user }}" 
+      - "DB_PASS={{ gitlab_mysql_root }}"
 
 - name: setup redis container
   docker:
     image: sameersbn/redis:latest
     name: gitlab-redis
+
+- name: setup gitlab container
+  docker:
+    name: gitlab
+    image: sameersbn/gitlab:latest
+    volumes: "{{gitlab_datadir}}:/home/git/data"
+    links: 
+      - gitlab-mysql:mysql 
+      - gitlab-redis:redisio
+    env: 
+      - "GITLAB_HOST={{ gitlab_virtualhost }}"
+      - "GITLAB_SSH_PORT=22"
+      - "GITLAB_PORT=80"
+      - "GITLAB_TIMEZONE=Tokyo"
+      - "DB_NAME={{ gitlab_mysql_db_name }}" 
+      - "DB_USER={{ gitlab_mysql_user }}" 
+      - "DB_PASS={{ gitlab_mysql_root }}"
+      #- "GITLAB_SIGNUP=true"
+    ports: 
+      - "{{ gitlab_internal_http_port }}:80" 
+      - "{{ gitlab_internal_ssh_port }}:22"
+        #- "{{ ssh_port }}:22"
+
+- name: open gitlab ssh port
+  ufw: 
+    rule: allow 
+    proto: tcp
+    port: "{{ gitlab_internal_ssh_port }}"
+
+- name: locate nginx conf
+  template: src=gitlab.conf dest=/etc/nginx/conf.d/gitlab.conf owner=root mode=0644
+
+- name: restart services
+  service: 
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nginx
+    - ssh
