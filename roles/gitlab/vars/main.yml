@@ -1,1 +1,8 @@
+gitlab_virtualhost: gitlab.{{ main_domain }}
 gitlab_mysql_datadir: /opt/gitlab/mysql
+gitlab_mysql_db_name: gitlabhq_production
+gitlab_mysql_user: root
+gitlab_mysql_root: eugene
+gitlab_datadir: /opt/gitlab/data
+gitlab_internal_http_port: 10080 
+gitlab_internal_ssh_port: 11023

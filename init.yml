@@ -9,6 +9,6 @@
   sudo: true
   roles:
     - base
-    - angstwad.docker_ubuntu
+      #- angstwad.docker_ubuntu
     - gitlab
 
