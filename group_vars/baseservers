@@ -1,6 +1,6 @@
 ssh_port: 11022
 ansible_ssh_port: 11022
 ansible_ssh_user: alatani
-ansible_ssh_private_key_file: ~/.ssh/sakura/id_rsa
+ansible_ssh_private_key_file: ~/.ssh/sakura/id_rsa_2
 
 main_domain: kanamestone.net

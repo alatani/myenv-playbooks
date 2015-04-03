@@ -1,12 +1,13 @@
 - name: setup mysql container
   docker:
-    image: sameersbn/mysql:latest
-    volumes: "{{gitlab_mysql_datadir}}:/var/lib/mysql"
     name: gitlab-mysql
+    image: sameersbn/mysql:latest
+    volumes: 
+      - "{{gitlab_mysql_datadir}}:/var/lib/mysql"
     env:
-      - "DB_NAME={{ gitlab_mysql_db_name }}" 
-      - "DB_USER={{ gitlab_mysql_user }}" 
-      - "DB_PASS={{ gitlab_mysql_root }}"
+      DB_NAME: "{{ gitlab_mysql_db_name }}" 
+      DB_USER: "{{ gitlab_mysql_user }}" 
+      DB_PASS: "{{ gitlab_mysql_root }}"
 
 - name: setup redis container
   docker:
@@ -17,18 +18,19 @@
   docker:
     name: gitlab
     image: sameersbn/gitlab:latest
-    volumes: "{{gitlab_datadir}}:/home/git/data"
+    volumes: 
+      - "{{gitlab_datadir}}:/home/git/data"
     links: 
       - gitlab-mysql:mysql 
       - gitlab-redis:redisio
     env: 
-      - "GITLAB_HOST={{ gitlab_virtualhost }}"
-      - "GITLAB_SSH_PORT=22"
-      - "GITLAB_PORT=80"
-      - "GITLAB_TIMEZONE=Tokyo"
-      - "DB_NAME={{ gitlab_mysql_db_name }}" 
-      - "DB_USER={{ gitlab_mysql_user }}" 
-      - "DB_PASS={{ gitlab_mysql_root }}"
+      GITLAB_HOST: "{{ gitlab_virtualhost }}"
+      GITLAB_SSH_PORT: 22
+      GITLAB_PORT: 80
+      GITLAB_TIMEZONE: Tokyo
+      DB_NAME: "{{ gitlab_mysql_db_name }}" 
+      DB_USER: "{{ gitlab_mysql_user }}" 
+      DB_PASS: "{{ gitlab_mysql_root }}"
       #- "GITLAB_SIGNUP=true"
     ports: 
       - "{{ gitlab_internal_http_port }}:80" 

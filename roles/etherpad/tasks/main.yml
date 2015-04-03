@@ -1,0 +1,9 @@
+- name: setup mysql container
+  docker:
+    image: sameersbn/mysql:latest
+    volumes: "{{gitlab_mysql_datadir}}:/var/lib/mysql"
+    name: gitlab-mysql
+    env:
+      - "DB_NAME={{ gitlab_mysql_db_name }}" 
+      - "DB_USER={{ gitlab_mysql_user }}" 
+      - "DB_PASS={{ gitlab_mysql_root }}"

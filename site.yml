@@ -11,4 +11,6 @@
     - base
       #- angstwad.docker_ubuntu
     - gitlab
+  vars:
+    hoge: fuga
 
