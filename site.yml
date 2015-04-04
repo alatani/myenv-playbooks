@@ -9,8 +9,8 @@
   sudo: true
   roles:
     - base
-      #- angstwad.docker_ubuntu
     - gitlab
+    - etherpad
   vars:
     hoge: fuga
 

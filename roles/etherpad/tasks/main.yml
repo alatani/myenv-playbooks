@@ -1,9 +1,27 @@
 - name: setup mysql container
   docker:
-    image: sameersbn/mysql:latest
-    volumes: "{{gitlab_mysql_datadir}}:/var/lib/mysql"
-    name: gitlab-mysql
+    name: etherpad-mysql
+    image: mysql:5.6
+    volumes: 
+      - "{{etherpad_mysql_datadir}}:/var/lib/mysql"
     env:
-      - "DB_NAME={{ gitlab_mysql_db_name }}" 
-      - "DB_USER={{ gitlab_mysql_user }}" 
-      - "DB_PASS={{ gitlab_mysql_root }}"
+      MYSQL_ROOT_PASSWORD: "{{ etherpad_mysql_pass }}" 
+
+#TODO:
+#grant all privileges on *.* to root@"%" identified by '{{ etherpad_mysql_pass }}' with grant option;
+
+- name: setup etherpad
+  docker:
+    name: etherpad
+    image: tvelocity/etherpad-lite:latest
+    links:
+      - etherpad-mysql:mysql
+    ports: 
+      - "{{ etherpad_internal_http_port }}:9001" 
+    env:
+      ETHERPAD_DB_PASSWORD: "{{ etherpad_mysql_pass }}"
+
+- name: locate nginx conf
+  template: src=etherpad.conf dest=/etc/nginx/conf.d/etherpad.conf owner=root mode=0644
+  notify: 
+    - restart nginx

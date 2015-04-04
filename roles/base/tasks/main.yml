@@ -1,5 +1,5 @@
 #ufw must configured at first. maybe.
-- include: ufw.yml
+#- include: ufw.yml
 
 - name: apt-get update
   action: apt update_cache=yes 
@@ -19,6 +19,7 @@
     - tmux
     - mailutils
     - sasl2-bin
+    - dstat
 
 - include: nginx.yml
 - include: docker.yml

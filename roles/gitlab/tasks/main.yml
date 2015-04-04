@@ -37,19 +37,13 @@
         #- "{{ gitlab_internal_ssh_port }}:{{ gitlab_internal_ssh_port }}"
       - "{{ gitlab_internal_ssh_port }}:22"
 
-- name: open gitlab ssh port
-  ufw: 
-    rule: allow 
-    proto: tcp
-    port: "{{ gitlab_internal_ssh_port }}"
+#- name: open gitlab ssh port
+#  ufw: 
+#    rule: allow 
+#    proto: tcp
+#    port: "{{ gitlab_internal_ssh_port }}"
+#  notify: restart ufw
 
 - name: locate nginx conf
   template: src=gitlab.conf dest=/etc/nginx/conf.d/gitlab.conf owner=root mode=0644
-
-- name: restart services
-  service: 
-    name: "{{ item }}"
-    state: restarted
-  with_items:
-    - nginx
-    - ssh
+  notify: restart nginx

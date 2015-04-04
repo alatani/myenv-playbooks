@@ -1,0 +1,6 @@
+etherpad_virtualhost: etherpad.{{ main_domain }}
+etherpad_mysql_datadir: /opt/etherpad/mysql
+etherpad_mysql_user: root
+etherpad_mysql_pass: WFaQe8TnQLg
+etherpad_datadir: /opt/etherpad/data
+etherpad_internal_http_port: 10081

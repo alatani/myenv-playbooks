@@ -4,3 +4,4 @@
 
 - name: locate conf file
   template: src=nginx.conf dest=/etc/nginx/nginx.conf owner=root mode=0644
+  notify: restart nginx
